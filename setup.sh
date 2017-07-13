@@ -71,7 +71,6 @@ fi
 ########################################
 ##BEGIN MAIN SCRIPT##
 #Pre checks: These are a couple of basic sanity checks the script does before proceeding.
-SERVER=$(curl -s 'https://www.apache.org/dyn/closer.cgi?as_json=1' | jq --raw-output '.preferred|rtrimstr("/")')
 
 echo -e "${YELLOW}Please type in a MySQL password, this will be used for the guac database.${NC}"
 read guac_mysql_pass
@@ -88,6 +87,8 @@ echo -e "${YELLOW}Please type in a root password now${NC}"
 read new_root_pass
 fi
 install_packages build-essential libcairo2-dev libjpeg-turbo8-dev libpng12-dev libossp-uuid-dev libavcodec-dev libavutil-dev libswscale-dev libfreerdp-dev libpango1.0-dev libssh2-1-dev libtelnet-dev libvncserver-dev libpulse-dev libssl-dev libvorbis-dev libwebp-dev mysql-server mysql-client mysql-common mysql-utilities tomcat8 freerdp ghostscript jq wget curl
+
+SERVER=$(curl -s 'https://www.apache.org/dyn/closer.cgi?as_json=1' | jq --raw-output '.preferred|rtrimstr("/")')
 
 echo "" >> /etc/default/tomcat8
 echo "# GUACAMOLE EVN VARIABLE" >> /etc/default/tomcat8
