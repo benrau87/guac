@@ -93,9 +93,13 @@ echo "" >> /etc/default/tomcat8
 echo "# GUACAMOLE EVN VARIABLE" >> /etc/default/tomcat8
 echo "GUACAMOLE_HOME=/etc/guacamole" >> /etc/default/tomcat8
 wget $SERVER/incubator/guacamole/0.9.12-incubating/source/guacamole-server-0.9.12-incubating.tar.gz
+error_check server downloaded
 wget $SERVER/incubator/guacamole/0.9.12-incubating/binary/guacamole-0.9.12-incubating.war
+error_check war downloaded
 wget $SERVER/incubator/guacamole/0.9.12-incubating/binary/guacamole-auth-jdbc-0.9.12-incubating.tar.gz
+error_check auth downloaded
 wget https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.41.tar.gz
+error_check connector downloaded
 
 tar -xzf guacamole-server-0.9.12-incubating.tar.gz
 tar -xzf guacamole-auth-jdbc-0.9.12-incubating.tar.gz
