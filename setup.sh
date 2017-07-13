@@ -71,3 +71,88 @@ fi
 ########################################
 ##BEGIN MAIN SCRIPT##
 #Pre checks: These are a couple of basic sanity checks the script does before proceeding.
+SERVER=$(curl -s 'https://www.apache.org/dyn/closer.cgi?as_json=1' | jq --raw-output '.preferred|rtrimstr("/")')
+
+echo -e "${YELLOW}Please type in a MySQL password, this will be used for the guac database.${NC}"
+read guac_mysql_pass
+
+read -p "${YELLOW}Do you already have a MySQL root user and password?. Y/N${NC}" -n 1 -r
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+echo -e "${YELLOW}Please type in the password now${NC}"
+read root_pass
+else
+echo -e "${YELLOW}Please type in a root password now${NC}"
+read new_root_pass
+fi
+
+
+install_packages build-essential libcairo2-dev libjpeg-turbo8-dev libpng12-dev libossp-uuid-dev libavcodec-dev libavutil-dev libswscale-dev libfreerdp-dev libpango1.0-dev libssh2-1-dev libtelnet-dev libvncserver-dev libpulse-dev libssl-dev libvorbis-dev libwebp-dev mysql-server mysql-client mysql-common mysql-utilities tomcat8 freerdp ghostscript jq wget curl
+
+echo "" >> /etc/default/tomcat8
+echo "# GUACAMOLE EVN VARIABLE" >> /etc/default/tomcat8
+echo "GUACAMOLE_HOME=/etc/guacamole" >> /etc/default/tomcat8
+wget $SERVER/incubator/guacamole/0.9.12-incubating/source/guacamole-server-0.9.12-incubating.tar.gz
+wget $SERVER/incubator/guacamole/0.9.12-incubating/binary/guacamole-0.9.12-incubating.war
+wget $SERVER/incubator/guacamole/0.9.12-incubating/binary/guacamole-auth-jdbc-0.9.12-incubating.tar.gz
+wget https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.41.tar.gz
+
+tar -xzf guacamole-server-0.9.12-incubating.tar.gz
+tar -xzf guacamole-auth-jdbc-0.9.12-incubating.tar.gz
+tar -xzf mysql-connector-java-5.1.41.tar.gz
+
+dir_check /etc/guacamole
+dir_check /etc/guacamole/lib
+dir_check /etc/guacamole/extensions
+
+cd guacamole-server-0.9.12-incubating
+./configure --with-init-dir=/etc/init.d
+make
+make install
+ldconfig
+systemctl enable guacd
+cd ..
+
+mv guacamole-0.9.12-incubating.war /etc/guacamole/guacamole.war
+ln -s /etc/guacamole/guacamole.war /var/lib/tomcat8/webapps/
+ln -s /usr/local/lib/freerdp/* /usr/lib/x86_64-linux-gnu/freerdp/.
+cp mysql-connector-java-5.1.41/mysql-connector-java-5.1.41-bin.jar /etc/guacamole/lib/
+cp guacamole-auth-jdbc-0.9.12-incubating/mysql/guacamole-auth-jdbc-mysql-0.9.12-incubating.jar /etc/guacamole/extensions/
+
+echo "mysql-hostname: localhost" >> /etc/guacamole/guacamole.properties
+echo "mysql-port: 3306" >> /etc/guacamole/guacamole.properties
+echo "mysql-database: guacamole_db" >> /etc/guacamole/guacamole.properties
+echo "mysql-username: guacamole_user" >> /etc/guacamole/guacamole.properties
+
+echo "mysql-password: $guac_mysql_pass" >> /etc/guacamole/guacamole.properties
+rm -rf /usr/share/tomcat8/.guacamole
+ln -s /etc/guacamole /usr/share/tomcat8/.guacamole
+
+# Restart Tomcat Service
+service tomcat8 restart
+
+if [ -z "$new_root_pass" ]
+then
+mysql -u root -p$root_pass
+create database guacamole_db;
+create user 'guacamole_user'@'localhost' identified by '$guac_mysql_pass';
+GRANT SELECT,INSERT,UPDATE,DELETE ON guacamole_db.* TO 'guacamole_user'@'localhost';
+flush privileges;
+quit
+cat guacamole-auth-jdbc-0.9.12-incubating/mysql/schema/*.sql | mysql -u root -proot_pass guacamole_db
+else
+mysql -u root -p$new_root_pass
+create database guacamole_db;
+create user 'guacamole_user'@'localhost' identified by '$guac_mysql_pass';
+GRANT SELECT,INSERT,UPDATE,DELETE ON guacamole_db.* TO 'guacamole_user'@'localhost';
+flush privileges;
+quit
+cat guacamole-auth-jdbc-0.9.12-incubating/mysql/schema/*.sql | mysql -u root -pnew_root_pass guacamole_db
+fi
+
+# Cleanup Downloads
+rm -rf guacamole-*
+rm -rf mysql-connector-java-5.1.41*
+
+
+echo -e "${YELLOW}Finished installation user is guacadmin password guacadmin.${NC}"
