@@ -79,9 +79,11 @@ read guac_mysql_pass
 read -p "Do you already have a MySQL  service running? y/n" -n 1 -r
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
+echo
 echo -e "${YELLOW}Please type in the root user's password now${NC}"
 read root_pass
 else
+echo
 echo -e "${YELLOW}Please type in a root password now${NC}"
 read new_root_pass
 fi
