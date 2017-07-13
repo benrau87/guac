@@ -87,8 +87,6 @@ echo
 echo -e "${YELLOW}Please type in a root password now${NC}"
 read new_root_pass
 fi
-
-
 install_packages build-essential libcairo2-dev libjpeg-turbo8-dev libpng12-dev libossp-uuid-dev libavcodec-dev libavutil-dev libswscale-dev libfreerdp-dev libpango1.0-dev libssh2-1-dev libtelnet-dev libvncserver-dev libpulse-dev libssl-dev libvorbis-dev libwebp-dev mysql-server mysql-client mysql-common mysql-utilities tomcat8 freerdp ghostscript jq wget curl
 
 echo "" >> /etc/default/tomcat8
