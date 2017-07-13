@@ -139,7 +139,7 @@ create user 'guacamole_user'@'localhost' identified by '$guac_mysql_pass';
 GRANT SELECT,INSERT,UPDATE,DELETE ON guacamole_db.* TO 'guacamole_user'@'localhost';
 flush privileges;
 quit
-cat guacamole-auth-jdbc-0.9.12-incubating/mysql/schema/*.sql | mysql -u root -proot_pass guacamole_db
+cat guacamole-auth-jdbc-0.9.12-incubating/mysql/schema/*.sql | mysql -u root -p$root_pass guacamole_db
 else
 mysql -u root -p$new_root_pass
 create database guacamole_db;
@@ -147,7 +147,7 @@ create user 'guacamole_user'@'localhost' identified by '$guac_mysql_pass';
 GRANT SELECT,INSERT,UPDATE,DELETE ON guacamole_db.* TO 'guacamole_user'@'localhost';
 flush privileges;
 quit
-cat guacamole-auth-jdbc-0.9.12-incubating/mysql/schema/*.sql | mysql -u root -pnew_root_pass guacamole_db
+cat guacamole-auth-jdbc-0.9.12-incubating/mysql/schema/*.sql | mysql -u root -p$new_root_pass guacamole_db
 fi
 
 # Cleanup Downloads
