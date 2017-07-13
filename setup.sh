@@ -79,6 +79,7 @@ read -p "Do you already have a MySQL  service running? y/n" -n 1 -r
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
 echo
+mysql=true
 echo -e "${YELLOW}Please type in the root user's password now${NC}"
 read root_pass
 else
@@ -138,7 +139,7 @@ ln -s /etc/guacamole /usr/share/tomcat8/.guacamole
 # Restart Tomcat Service
 service tomcat8 restart
 
-if [ -z "$new_root_pass" ]
+if [ "$mysql" -eq "true" ]
 then
 mysql -u root -p$root_pass
 create database guacamole_db;
@@ -156,10 +157,5 @@ flush privileges;
 quit
 cat guacamole-auth-jdbc-0.9.12-incubating/mysql/schema/*.sql | mysql -u root -p$new_root_pass guacamole_db
 fi
-
-# Cleanup Downloads
-rm -rf guacamole-*
-rm -rf mysql-connector-java-5.1.41*
-
 
 echo -e "${YELLOW}Finished installation user is guacadmin password guacadmin.${NC}"
