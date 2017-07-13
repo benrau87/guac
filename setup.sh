@@ -76,10 +76,10 @@ SERVER=$(curl -s 'https://www.apache.org/dyn/closer.cgi?as_json=1' | jq --raw-ou
 echo -e "${YELLOW}Please type in a MySQL password, this will be used for the guac database.${NC}"
 read guac_mysql_pass
 
-read -p "${YELLOW}Do you already have a MySQL root user and password?. Y/N${NC}" -n 1 -r
+read -p "Do you already have a MySQL  service running? y/n" -n 1 -r
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
-echo -e "${YELLOW}Please type in the password now${NC}"
+echo -e "${YELLOW}Please type in the root user's password now${NC}"
 read root_pass
 else
 echo -e "${YELLOW}Please type in a root password now${NC}"
