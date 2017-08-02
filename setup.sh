@@ -139,7 +139,7 @@ ln -s /etc/guacamole /usr/share/tomcat8/.guacamole
 # Restart Tomcat Service
 service tomcat8 restart
 
-if [ "$mysql" -eq "true" ]
+if [ "$mysql" == "true" ]
 then
 mysql -u root -p$root_pass
 create database guacamole_db;
